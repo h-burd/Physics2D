@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+// #include <thread>
 
 using namespace std;
 
@@ -7,24 +8,77 @@ using namespace std;
 // m = mass
 // k = spring constant
 // c = damping force
+// c^2 > 4km --> underdamped
 
 
-class SpringMass
+class SpringPhysics1D
 {
+private:
+    double x; // position of mass
+    double v; // velocity of mass
+    
+    double m; // mass on spring
+    double k; // spring constant
+    double c; // damping force
+
+    double t; // time
+    double h; // time step
+
+    double vn; // temp value for v
+    double xn;
+
 public:
-    float x; // position 
-    float m; // mass on spring
-    float k; // spring constant
-    float c; // damping force
-    float F; // external force
+
+    SpringPhysics1D(){
+        x = -2.0; // position of mass
+        v = 0.0; // velocity of mass
+    
+        m = 0.5; // mass on spring
+        k = 3.0; // spring constant
+        c = 0.1; // damping force
+        
+        t = 0.0; // time
+        h = 0.025; // time step
+    }
+
+    SpringPhysics1D(double mass, double springConstant, double dampingForce){
+        m = mass;
+        k = springConstant;
+        c = dampingForce;
+
+        v = 0.0; // velocity of mass
+        t = 0.0; // time
+        h = 0.025; // time step
+    }
+
+
+    void eulers_method(){
+        cout << "t: " << t << " x: " << x << " v: " << v << endl;
+        xn = x + (h * v);
+        vn = v + (h * ((-k/m) * x) + ((-c/m) * v));
+        v = vn;
+        x = xn;
+        t += h;
+    }
+
+    void update(){
+
+    }
 
 };
 
 
 
-
 int main()
 {
-    cout << "hello" << endl;
+
+    SpringPhysics1D SpringSim;
+
+    
+    for (int i = 0; i < 100; ++i)
+    {
+        SpringSim.eulers_method();
+    }
+
     return 0;
 }
