@@ -1,84 +1,60 @@
 #include <iostream>
 #include <vector>
-// #include <thread>
+#include "physics.hpp"
+#include "render.hpp"
+#include "solver.hpp"
+#include <SFML/Graphics.hpp>
 
 using namespace std;
-
-// y'' + c/m y' + k/m y = F(external) = 0
-// m = mass
-// k = spring constant
-// c = damping force
-// c^2 > 4km --> underdamped
-
-
-class SpringPhysics1D
-{
-private:
-    double x; // position of mass
-    double v; // velocity of mass
-    
-    double m; // mass on spring
-    double k; // spring constant
-    double c; // damping force
-
-    double t; // time
-    double h; // time step
-
-    double vn; // temp value for v
-    double xn;
-
-public:
-
-    SpringPhysics1D(){
-        x = -2.0; // position of mass
-        v = 0.0; // velocity of mass
-    
-        m = 0.5; // mass on spring
-        k = 3.0; // spring constant
-        c = 0.1; // damping force
-        
-        t = 0.0; // time
-        h = 0.025; // time step
-    }
-
-    SpringPhysics1D(double mass, double springConstant, double dampingForce){
-        m = mass;
-        k = springConstant;
-        c = dampingForce;
-
-        v = 0.0; // velocity of mass
-        t = 0.0; // time
-        h = 0.025; // time step
-    }
-
-
-    void eulers_method(){
-        cout << "t: " << t << " x: " << x << " v: " << v << endl;
-        xn = x + (h * v);
-        vn = v + (h * ((-k/m) * x) + ((-c/m) * v));
-        v = vn;
-        x = xn;
-        t += h;
-    }
-
-    void update(){
-
-    }
-
-};
 
 
 
 int main()
 {
-
-    SpringPhysics1D SpringSim;
+    // setup window
+    const int32_t window_width  = 1000;
+    const int32_t window_height = 1000;
+    const uint32_t frame_rate = 60;
 
     
-    for (int i = 0; i < 100; ++i)
+    sf::RenderWindow window(sf::VideoMode(window_width, window_height), "Physics Simulation");
+    window.setFramerateLimit(frame_rate);
+
+    sf::Clock clock;
+
+    // create vector of physics objects
+    vector<Physics2D> objects;
+
+    Render render;
+    Solver solver;
+
+
+
+
+
+    while (window.isOpen())
     {
-        SpringSim.eulers_method();
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)){
+                window.close();
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && (clock.getElapsedTime().asSeconds() >= 0.1))
+            {
+                clock.restart();
+                Physics2D obj(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+                objects.push_back(obj);
+                // cout << objects.size() << endl;
+            }
+        }
+
+        window.clear();
+        render.renderObjects(objects, window);
+        solver.varlet_solver(objects, 0.1);
+        window.display();
     }
+
 
     return 0;
 }

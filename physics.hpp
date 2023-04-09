@@ -1,64 +1,34 @@
 #pragma once
-#include <vector>
 
 
-class SpringPhysics1D
+class Physics2D
 {
-// y'' + c/m y' + k/m y = F(external) = 0
-// m = mass
-// k = spring constant
-// c = damping force
-// c^2 > 4km --> underdamped
-private:
-    double x; // position of mass
-    double v; // velocity of mass
-    
-    double m; // mass on spring
-    double k; // spring constant
-    double c; // damping force
-
-    double t; // time
-    double h; // time step
-
-    double vn; // temp value for v
-    double xn;
-
 public:
+    double x_pos;
+    double y_pos;
 
-    SpringPhysics1D(){
-        x = -2.0; // position of mass
-        v = 0.0; // velocity of mass
+    double x_vel;
+    double y_vel;
+
+    double x_acc;
+    double y_acc;
+
+
+    Physics2D(){
+        x_pos = 20;
+        y_pos = 100;
+        x_vel = 2;
+        y_vel = 0;
+    }
     
-        m = 0.5; // mass on spring
-        k = 3.0; // spring constant
-        c = 0.1; // damping force
-        
-        t = 0.0; // time
-        h = 0.025; // time step
+    Physics2D(double xpos, double ypos){
+        x_pos = xpos;
+        y_pos = ypos;
+        x_vel = 0;
+        y_vel = 0;
+        x_acc = 0;
+        y_acc = 30;
     }
-
-    SpringPhysics1D(double mass, double springConstant, double dampingForce){
-        m = mass;
-        k = springConstant;
-        c = dampingForce;
-
-        v = 0.0; // velocity of mass
-        t = 0.0; // time
-        h = 0.025; // time step
-    }
-
-
-    void eulers_method(){
-        // cout << "t: " << t << " x: " << x << " v: " << v << endl;
-        xn = x + (h * v);
-        vn = v + (h * ((-k/m) * x) + ((-c/m) * v));
-        v = vn;
-        x = xn;
-        t += h;
-    }
-
-    void update(){
-
-    }
-
 };
+
+
