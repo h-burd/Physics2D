@@ -52,7 +52,8 @@ int main()
         window.clear();
         render.renderObjects(objects, window);
         solver.varlet_solver(objects, 0.1);
-        solver.constraint_solver(objects, 0.1);
+        solver.constraint_solver(objects);
+        solver.collision_solver(objects);
         window.display();
     }
 

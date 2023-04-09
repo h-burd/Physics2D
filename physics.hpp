@@ -33,6 +33,7 @@ public:
         y_vel = 0;
         x_acc = 0;
         y_acc = 30;
+        // y_acc = 1000;
         radius = 30;
     }
 };
