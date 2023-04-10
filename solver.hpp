@@ -10,19 +10,31 @@ class Solver
 {
 public:
 
-	void varlet_solver(vector<Physics2D>& vect, float dt) {
+	Solver(float bounce_value){
+		bounce = bounce_value;
+	};
+
+	void verlet_solver(vector<Physics2D>& vect){
 		for (int i = 0; i < vect.size(); i++){
-			const double y_velnew = (vect[i].y_vel) + (vect[i].y_acc * dt);
-			vect[i].y_pos += y_velnew * dt;
-			vect[i].y_vel = y_velnew;
+			double vel_x = (vect[i].x_pos - vect[i].x_pos_last) * 0.998; // drag
+			double vel_y = (vect[i].y_pos - vect[i].y_pos_last) * 0.998;
+
+			vect[i].x_pos_last = vect[i].x_pos;
+			vect[i].y_pos_last = vect[i].y_pos;
+
+
+			vect[i].x_pos += vel_x;
+			vect[i].y_pos += vel_y;
+
+			vect[i].y_pos += 0.5;
 
     	}
 	}
 
-	// Constraint keeps objects on screen in a circle
-	void constraint_solver(vector<Physics2D>& vect){
+	// Constraint keeps objects on screen in a circle centered on screen with given radius
+	void circle_constraint_solver(vector<Physics2D>& vect){
 		for (int i = 0; i < vect.size(); i++){
-			// constraint center = (screen width / 2, screen heigh / 2)
+			// constraint center = (screen width / 2, screen height / 2)
 			// constraint radius = 400;
 			const double a = (vect[i].x_pos - (window_width / 2));
 			const double b = (vect[i].y_pos - (window_height / 2));
@@ -36,6 +48,33 @@ public:
     	}
 	}
 
+	// Constraint keeps objects on the screen
+	void screen_constraint_solver(vector<Physics2D>& vect){
+		for (int i = 0; i < vect.size(); i++){
+			double vel_x = (vect[i].x_pos - vect[i].x_pos_last);
+			double vel_y = (vect[i].y_pos - vect[i].y_pos_last);
+			
+			if(vect[i].x_pos + (vect[i].radius * 2) > window_width){
+				vect[i].x_pos = window_width - 2 * vect[i].radius;
+				vect[i].x_pos_last = vect[i].x_pos + vel_x * bounce;
+			}
+			else if(vect[i].x_pos < 0){
+				vect[i].x_pos = 0;
+				vect[i].x_pos_last = vect[i].x_pos + vel_x * bounce;
+			}
+			else if (vect[i].y_pos + (vect[i].radius * 2) > window_height)
+			{
+				vect[i].y_pos = window_height - 2 * vect[i].radius;
+				vect[i].y_pos_last = vect[i].y_pos + vel_y * bounce;
+			}
+			else if (vect[i].y_pos < 0){
+				vect[i].y_pos = 0;
+				vect[i].y_pos_last = vect[i].y_pos + vel_y * bounce;
+			}
+    	}
+	}
+
+
 	void collision_solver(vector<Physics2D>& vect){
 		for (int i = 0; i < vect.size(); i++){
 			for (int j = 0; j < vect.size(); ++j)
@@ -47,20 +86,18 @@ public:
 					const double R = sqrt((a * a) + (b * b));
 
 					if(R/2 < vect[i].radius){
-						vect[j].x_pos += (abs(a)/3);
-						vect[i].x_pos -= (abs(a)/3);
-						vect[j].y_pos += (abs(b)/3);
-						vect[i].y_pos -= (abs(b)/3);
+						vect[j].x_pos += (a/2);
+						vect[i].x_pos += (a/2);
+						vect[j].y_pos += (b/2);
+						vect[i].y_pos += (b/2);
 
 					}
 				}
 			}
-			
-
-
-
     	}
 	}
 
-	
+private:
+	float bounce;
+
 };

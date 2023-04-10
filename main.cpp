@@ -26,7 +26,7 @@ int main()
     vector<Physics2D> objects;
 
     Render render;
-    Solver solver;
+    Solver solver(0.2);
 
 
 
@@ -51,9 +51,10 @@ int main()
 
         window.clear();
         render.renderObjects(objects, window);
-        solver.varlet_solver(objects, 0.1);
-        solver.constraint_solver(objects);
-        solver.collision_solver(objects);
+        solver.verlet_solver(objects);
+        // solver.circle_constraint_solver(objects);
+        solver.screen_constraint_solver(objects);
+        // solver.collision_solver(objects);
         window.display();
     }
 

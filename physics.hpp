@@ -7,11 +7,8 @@ public:
     double x_pos;
     double y_pos;
 
-    double x_vel;
-    double y_vel;
-
-    double x_acc;
-    double y_acc;
+    double x_pos_last;
+    double y_pos_last;
 
     double radius;
 
@@ -19,21 +16,16 @@ public:
     Physics2D(){
         x_pos = 20;
         y_pos = 100;
-        x_vel = 2;
-        y_vel = 0;
-        x_acc = 0;
-        y_acc = 30;
+        x_pos_last = 20;
+        y_pos_last = 100;
         radius = 30;
     }
     
     Physics2D(double xpos, double ypos){
         x_pos = xpos;
         y_pos = ypos;
-        x_vel = 0;
-        y_vel = 0;
-        x_acc = 0;
-        y_acc = 30;
-        // y_acc = 1000;
+        x_pos_last = xpos;
+        y_pos_last = ypos;
         radius = 30;
     }
 };
