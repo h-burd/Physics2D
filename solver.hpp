@@ -9,26 +9,29 @@ const int32_t window_height = 1000;
 class Solver
 {
 public:
-
 	Solver(float bounce_value){
 		bounce = bounce_value;
 	};
 
 	void verlet_solver(vector<Physics2D>& vect){
 		for (int i = 0; i < vect.size(); i++){
-			double vel_x = (vect[i].x_pos - vect[i].x_pos_last) * 0.998; // drag
-			double vel_y = (vect[i].y_pos - vect[i].y_pos_last) * 0.998;
+			if(vect[i].fixed == false){
+				double vel_x = (vect[i].x_pos - vect[i].x_pos_last) * 0.998; // drag
+				double vel_y = (vect[i].y_pos - vect[i].y_pos_last) * 0.998;
+				
+				vect[i].x_pos_last = vect[i].x_pos;
+				vect[i].y_pos_last = vect[i].y_pos;
 
-			vect[i].x_pos_last = vect[i].x_pos;
-			vect[i].y_pos_last = vect[i].y_pos;
 
+				vect[i].x_pos += vel_x;
+				vect[i].y_pos += vel_y;
 
-			vect[i].x_pos += vel_x;
-			vect[i].y_pos += vel_y;
-
-			vect[i].y_pos += 0.5;
-
+				vect[i].y_pos += vect[i].gravity;
+			}
+			
     	}
+		
+		
 	}
 
 	// Constraint keeps objects on screen in a circle centered on screen with given radius
@@ -85,14 +88,41 @@ public:
 
 					const double R = sqrt((a * a) + (b * b));
 
-					if(R/2 < vect[i].radius){
-						vect[j].x_pos += (a/2);
-						vect[i].x_pos += (a/2);
-						vect[j].y_pos += (b/2);
-						vect[i].y_pos += (b/2);
+					if(R - (vect[i].radius * 2) < 0){
+						// cout << "collisiosn" << endl;
+						// vect[j].x_pos += (a / 2);
+						// vect[i].x_pos += (a / 2);
+						vect[j].x_pos_last = (vect[i].x_pos + a);
+						vect[i].x_pos_last = vect[j].x_pos + a;
+
+						// vect[j].y_pos += (b / 2);
+						// vect[i].y_pos += (b / 2);
+						vect[j].y_pos_last = vect[i].y_pos + b;
+						vect[i].y_pos_last = vect[j].y_pos + b;
 
 					}
 				}
+			}
+    	}
+	}
+
+	void sticks_solver(vector<Sticks2D>& stk, vector<Physics2D>& objs){
+		for (int i = 0; i < stk.size(); i++){
+			const double a = objs[stk[i].obj1].x_pos - objs[stk[i].obj2].x_pos;
+			const double b = objs[stk[i].obj1].y_pos - objs[stk[i].obj2].y_pos;
+
+			const double R = sqrt((a * a) + (b * b));
+
+			const double diff = stk[i].length - R;
+			const double percent = diff / R / 2;
+
+			if(objs[stk[i].obj2].fixed == false){
+				objs[stk[i].obj2].x_pos -= a * percent;
+				objs[stk[i].obj2].y_pos -= b * percent;
+			}
+			if(objs[stk[i].obj1].fixed == false){
+				objs[stk[i].obj1].x_pos += a * percent;
+				objs[stk[i].obj1].y_pos += b * percent;
 			}
     	}
 	}
