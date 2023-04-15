@@ -3,6 +3,7 @@
 #include "physics.hpp"
 #include "render.hpp"
 #include "solver.hpp"
+#include "input.hpp"
 #include <SFML/Graphics.hpp>
 
 using namespace std;
@@ -28,11 +29,11 @@ int main()
 
     Render render;
     Solver solver(0.2);
+    Input input;
 
-    // Physics2D obj(500 - 30,500 - 30, 0.0);
-    // objects.push_back(obj);
-
-    Physics2D obj(530, 0, 0.0);
+    // create inital physics object
+    Physics2D obj(530, 0, 0.5);
+    obj.fixed = true;
     objects.push_back(obj);
 
     while (window.isOpen())
@@ -46,31 +47,47 @@ int main()
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && (clock.getElapsedTime().asSeconds() >= 0.1))
             {
                 clock.restart();
-                Physics2D obj(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y, 0.5);
+                // Physics2D obj(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y, 0.5);
+                Physics2D obj(objects[objects.size() - 1].x_pos + 50, objects[objects.size() - 1].y_pos + 50, 0.5);
+
                 objects.push_back(obj);
-                const double a = (sf::Mouse::getPosition(window).x - objects[0].x_pos);
-                const double b = (sf::Mouse::getPosition(window).y - objects[0].y_pos);
-                // distance from the object to the center of the screen
-                const double R = sqrt((a * a) + (b * b));
                 Sticks2D stk(50, objects.size() - 1, objects.size() - 2);
                 sticks.push_back(stk);
-                for (int i = 0; i < objects.size(); ++i)
-                {
-                    objects[i].fixed = false;
-                }
-                objects[0].fixed = true;
-                objects[objects.size() - 1].fixed = true;
-                // cout << "objects: " << objects.size() << "sticks: " << sticks.size() << endl;
-            }
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
-                objects[0].x_pos = sf::Mouse::getPosition(window).x;
-                objects[0].y_pos = sf::Mouse::getPosition(window).y;
-            }
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
-                objects[objects.size() - 1].x_pos = sf::Mouse::getPosition(window).x;
-                objects[objects.size() - 1].y_pos = sf::Mouse::getPosition(window).y;
             }
             
+            // Move the positoin of the closest object to the mouse
+            if(sf::Mouse::isButtonPressed(sf::Mouse::Left) && (clock.getElapsedTime().asSeconds() >= 0.1)){
+                objects[input.find_closest_object(objects, window)].x_pos = sf::Mouse::getPosition(window).x;
+                objects[input.find_closest_object(objects, window)].y_pos = sf::Mouse::getPosition(window).y;
+            }
+            
+            // Toggle if an object has a fixed position
+            if(sf::Mouse::isButtonPressed(sf::Mouse::Right) && (clock.getElapsedTime().asSeconds() >= 0.1)){
+                if(objects[input.find_closest_object(objects, window)].fixed){
+                    objects[input.find_closest_object(objects, window)].fixed = false;
+                } else {
+                    objects[input.find_closest_object(objects, window)].fixed = true;
+                }
+            }
+
+            // Delete an object and remove stick connections using right arrow key
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && (clock.getElapsedTime().asSeconds() >= 0.1)){
+                const int closestObjectIndex = input.find_closest_object(objects, window);
+                objects.erase(objects.begin() + closestObjectIndex);
+                int stickBreakIndex;
+                for (int i = 0; i < sticks.size(); i++){
+                    if(sticks[i].obj1 == closestObjectIndex || sticks[i].obj2 == closestObjectIndex){
+                        sticks.erase(sticks.begin() + i);
+                        stickBreakIndex = i;
+                    };
+                }
+                for (int i = stickBreakIndex; i < sticks.size(); i++){
+                    sticks[i].obj1 -= 1;
+                    sticks[i].obj2 -= 1;
+                }
+                // cout << "objs: " << objects.size() << "stks: " << sticks.size() << endl;
+            }
+
         }
 
         window.clear(sf::Color(46, 42, 46));

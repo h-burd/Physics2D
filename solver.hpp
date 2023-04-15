@@ -27,11 +27,11 @@ public:
 				vect[i].y_pos += vel_y;
 
 				vect[i].y_pos += vect[i].gravity;
+			} else {
+				vect[i].x_pos_last = vect[i].x_pos;
+				vect[i].y_pos_last = vect[i].y_pos;
 			}
-			
     	}
-		
-		
 	}
 
 	// Constraint keeps objects on screen in a circle centered on screen with given radius
