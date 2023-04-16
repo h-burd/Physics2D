@@ -14,17 +14,17 @@ class Render
 public:
 	sf::RenderWindow renderWindow;
 
-	Render(sf::RenderWindow& renderWindow, vector<Physics2D>& objects, vector<Sticks2D>& sticks) : window(renderWindow), objs(objects), stk(sticks) {}
+	Render(sf::RenderWindow& renderWindow, vector<Physics2D>& objects, vector<Sticks2D>& sticks) : window(renderWindow), objs(objects), stks(sticks) {}
 
 	void render_objects() 
 	{ 
 		sf::CircleShape circle;
 
-		for(int i = 0; i < stk.size(); i++){
+		for(int i = 0; i < stks.size(); i++){
 			sf::Vertex line[] =
 			{
-			    sf::Vertex(sf::Vector2f(objs[stk[i].obj1].x_pos + objs[stk[i].obj1].radius,objs[stk[i].obj1].y_pos + objs[stk[i].obj1].radius),sf::Color(254,254,254)),
-			    sf::Vertex(sf::Vector2f(objs[stk[i].obj2].x_pos + objs[stk[i].obj2].radius,objs[stk[i].obj2].y_pos + objs[stk[i].obj2].radius),sf::Color(254,254,254))
+			    sf::Vertex(sf::Vector2f(objs[stks[i].obj1].x_pos + objs[stks[i].obj1].radius,objs[stks[i].obj1].y_pos + objs[stks[i].obj1].radius),sf::Color(254,254,254)),
+			    sf::Vertex(sf::Vector2f(objs[stks[i].obj2].x_pos + objs[stks[i].obj2].radius,objs[stks[i].obj2].y_pos + objs[stks[i].obj2].radius),sf::Color(254,254,254))
 			};
 			window.draw(line, 2, sf::Lines);
 		}
@@ -49,6 +49,6 @@ public:
 private:
 	sf::RenderWindow& window;
 	vector<Physics2D>& objs;
-	vector<Sticks2D>& stk;
+	vector<Sticks2D>& stks;
 
 };
