@@ -25,6 +25,10 @@ public:
         }
         return distIndex;
 	}
+
+	void update(){
+		
+	}
 	
 
 private:

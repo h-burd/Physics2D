@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 
 
@@ -8,8 +9,14 @@ using namespace std;
 
 class Render
 {
-public:    
-	void render_objects(const vector<Physics2D> &objs, const vector<Sticks2D> &stk, sf::RenderWindow& window) 
+
+
+public:
+	sf::RenderWindow renderWindow;
+
+	Render(sf::RenderWindow& renderWindow, vector<Physics2D>& objects, vector<Sticks2D>& sticks) : window(renderWindow), objs(objects), stk(sticks) {}
+
+	void render_objects() 
 	{ 
 		sf::CircleShape circle;
 
@@ -39,5 +46,9 @@ public:
 	}
     // Colors list: [(249,38,114), (61,209,119), (255,201,0),(174, 129, 255), (255,63,128), (0,176,255), (254,254,254)]
 
+private:
+	sf::RenderWindow& window;
+	vector<Physics2D>& objs;
+	vector<Sticks2D>& stk;
 
 };
