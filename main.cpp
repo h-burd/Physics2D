@@ -28,7 +28,7 @@ int main()
     vector<Sticks2D> sticks;
 
     Render render(window, objects, sticks);
-    Solver solver(0.2);
+    Solver solver(objects, sticks);
     Input input;
 
     // create inital physics object
@@ -92,10 +92,10 @@ int main()
 
         window.clear(sf::Color(46, 42, 46));
         render.render_objects();
-        solver.sticks_solver(sticks, objects);
-        solver.verlet_solver(objects);
+        solver.sticks_solver();
+        solver.verlet_solver();
         // solver.circle_constraint_solver(objects);
-        solver.screen_constraint_solver(objects);
+        solver.screen_constraint_solver();
         // solver.collision_solver(objects);
         window.display();
     }
